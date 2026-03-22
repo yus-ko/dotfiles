@@ -72,7 +72,6 @@ fi
 echo "  - カスタマイズファイルを配置中..."
 cp "$SCRIPT_DIR/nvim/lua/config/lazy.lua" "$NVIM_DIR/lua/config/lazy.lua"
 cp "$SCRIPT_DIR/nvim/lazyvim.json" "$NVIM_DIR/lazyvim.json"
-cp "$SCRIPT_DIR/nvim/lazy-lock.json" "$NVIM_DIR/lazy-lock.json"
 
 # --- zsh-abbr 略語設定 ---
 echo "[6/6] zsh-abbr の略語設定を配置中..."
