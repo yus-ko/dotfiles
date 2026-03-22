@@ -10,7 +10,7 @@
 | `.p10k.zsh` | Powerlevel10k テーマ設定 |
 | `.bashrc` | bash 設定 |
 | `.tmux.conf` | tmux 設定 |
-| `nvim/` | Neovim 設定 |
+| `nvim/` | Neovim (LazyVim) カスタマイズ設定 |
 | `zsh-abbr/user-abbreviations` | zsh-abbr 略語定義 |
 
 ## zsh プラグイン
@@ -34,4 +34,5 @@ cd ~/config
 2. Powerlevel10k テーマのインストール
 3. zsh プラグインのインストール（syntax-highlighting, autosuggestions, abbr）
 4. 各設定ファイルのシンボリックリンク作成（既存ファイルはバックアップ）
-5. zsh-abbr の略語設定の配置
+5. Neovim セットアップ（LazyVim starter + カスタマイズファイル上書き）
+6. zsh-abbr の略語設定の配置

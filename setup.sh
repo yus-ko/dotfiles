@@ -7,23 +7,23 @@ echo "=== dotfiles セットアップ ==="
 
 # --- Oh My Zsh ---
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
-  echo "[1/5] Oh My Zsh をインストール中..."
+  echo "[1/6] Oh My Zsh をインストール中..."
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 else
-  echo "[1/5] Oh My Zsh は既にインストール済み"
+  echo "[1/6] Oh My Zsh は既にインストール済み"
 fi
 
 # --- Powerlevel10k テーマ ---
 P10K_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
 if [ ! -d "$P10K_DIR" ]; then
-  echo "[2/5] Powerlevel10k をインストール中..."
+  echo "[2/6] Powerlevel10k をインストール中..."
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$P10K_DIR"
 else
-  echo "[2/5] Powerlevel10k は既にインストール済み"
+  echo "[2/6] Powerlevel10k は既にインストール済み"
 fi
 
 # --- zsh プラグイン ---
-echo "[3/5] zsh プラグインをインストール中..."
+echo "[3/6] zsh プラグインをインストール中..."
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
 declare -A plugins=(
@@ -43,7 +43,7 @@ for plugin in "${!plugins[@]}"; do
 done
 
 # --- シンボリックリンク作成 ---
-echo "[4/5] シンボリックリンクを作成中..."
+echo "[4/6] シンボリックリンクを作成中..."
 
 link_file() {
   local src="$1"
@@ -61,10 +61,21 @@ link_file "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
 link_file "$SCRIPT_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
 link_file "$SCRIPT_DIR/.bashrc" "$HOME/.bashrc"
 link_file "$SCRIPT_DIR/.tmux.conf" "$HOME/.tmux.conf"
-link_file "$SCRIPT_DIR/nvim" "$HOME/.config/nvim"
+# --- Neovim (LazyVim) ---
+echo "[5/6] Neovim (LazyVim) をセットアップ中..."
+NVIM_DIR="$HOME/.config/nvim"
+if [ ! -d "$NVIM_DIR" ]; then
+  echo "  - LazyVim starter をクローン中..."
+  git clone https://github.com/LazyVim/starter "$NVIM_DIR"
+  rm -rf "$NVIM_DIR/.git"
+fi
+echo "  - カスタマイズファイルを配置中..."
+cp "$SCRIPT_DIR/nvim/lua/config/lazy.lua" "$NVIM_DIR/lua/config/lazy.lua"
+cp "$SCRIPT_DIR/nvim/lazyvim.json" "$NVIM_DIR/lazyvim.json"
+cp "$SCRIPT_DIR/nvim/lazy-lock.json" "$NVIM_DIR/lazy-lock.json"
 
 # --- zsh-abbr 略語設定 ---
-echo "[5/5] zsh-abbr の略語設定を配置中..."
+echo "[6/6] zsh-abbr の略語設定を配置中..."
 mkdir -p "$HOME/.config/zsh-abbr"
 link_file "$SCRIPT_DIR/zsh-abbr/user-abbreviations" "$HOME/.config/zsh-abbr/user-abbreviations"
 
