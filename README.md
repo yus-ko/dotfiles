@@ -23,7 +23,7 @@
 ## セットアップ
 
 ```bash
-git clone <this-repo> ~/dotfiles
+git clone https://github.com/yus-ko/dotfiles.git
 cd ~/dotfiles
 ./setup.sh
 ```
