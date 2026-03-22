@@ -23,8 +23,8 @@
 ## セットアップ
 
 ```bash
-git clone <this-repo> ~/config
-cd ~/config
+git clone <this-repo> ~/dotfiles
+cd ~/dotfiles
 ./setup.sh
 ```
 
