@@ -73,9 +73,16 @@ echo "  - カスタマイズファイルを配置中..."
 cp "$SCRIPT_DIR/nvim/lua/config/lazy.lua" "$NVIM_DIR/lua/config/lazy.lua"
 
 # --- zsh-abbr 略語設定 ---
-echo "[6/6] zsh-abbr の略語設定を配置中..."
+echo "[6/7] zsh-abbr の略語設定を配置中..."
 mkdir -p "$HOME/.config/zsh-abbr"
 link_file "$SCRIPT_DIR/zsh-abbr/user-abbreviations" "$HOME/.config/zsh-abbr/user-abbreviations"
+
+# --- imgcat ---
+echo "[7/7] imgcat をインストール中..."
+mkdir -p "$HOME/.local/bin"
+cp "$SCRIPT_DIR/bin/imgcat" "$HOME/.local/bin/imgcat"
+chmod +x "$HOME/.local/bin/imgcat"
+echo "  - imgcat -> $HOME/.local/bin/imgcat"
 
 echo ""
 echo "=== セットアップ完了 ==="

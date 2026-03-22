@@ -1,0 +1,6 @@
+#!/bin/bash
+# iTerm2 inline image protocol でターミナルに画像を表示する
+printf '\033]1337;File=inline=1;size=%d:%s\a' \
+  "$(wc -c < "$1")" \
+  "$(base64 < "$1" | tr -d '\n')"
+printf '\n'
