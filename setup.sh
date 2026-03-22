@@ -71,7 +71,6 @@ if [ ! -d "$NVIM_DIR" ]; then
 fi
 echo "  - カスタマイズファイルを配置中..."
 cp "$SCRIPT_DIR/nvim/lua/config/lazy.lua" "$NVIM_DIR/lua/config/lazy.lua"
-cp "$SCRIPT_DIR/nvim/lazyvim.json" "$NVIM_DIR/lazyvim.json"
 
 # --- zsh-abbr 略語設定 ---
 echo "[6/6] zsh-abbr の略語設定を配置中..."
