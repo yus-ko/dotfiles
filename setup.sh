@@ -5,25 +5,53 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 echo "=== dotfiles セットアップ ==="
 
+# --- 必要パッケージのインストール ---
+echo "[0/7] 必要パッケージをインストール中..."
+PACKAGES=(zsh git curl neovim tmux)
+
+if command -v apt-get &>/dev/null; then
+  # Debian / Ubuntu
+  MISSING=()
+  for pkg in "${PACKAGES[@]}"; do
+    dpkg -s "$pkg" &>/dev/null || MISSING+=("$pkg")
+  done
+  if [ ${#MISSING[@]} -gt 0 ]; then
+    echo "  - apt で不足パッケージをインストール: ${MISSING[*]}"
+    APT="apt-get"
+    [ "$(id -u)" -ne 0 ] && APT="sudo apt-get"
+    $APT update -qq
+    $APT install -y -qq "${MISSING[@]}"
+  else
+    echo "  - 必要パッケージはすべてインストール済み"
+  fi
+elif command -v brew &>/dev/null; then
+  # macOS (Homebrew)
+  for pkg in "${PACKAGES[@]}"; do
+    brew list "$pkg" &>/dev/null || brew install "$pkg"
+  done
+else
+  echo "  - WARNING: apt-get / brew が見つかりません。パッケージを手動でインストールしてください: ${PACKAGES[*]}"
+fi
+
 # --- Oh My Zsh ---
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
-  echo "[1/6] Oh My Zsh をインストール中..."
+  echo "[1/7] Oh My Zsh をインストール中..."
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 else
-  echo "[1/6] Oh My Zsh は既にインストール済み"
+  echo "[1/7] Oh My Zsh は既にインストール済み"
 fi
 
 # --- Powerlevel10k テーマ ---
 P10K_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
 if [ ! -d "$P10K_DIR" ]; then
-  echo "[2/6] Powerlevel10k をインストール中..."
+  echo "[2/7] Powerlevel10k をインストール中..."
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$P10K_DIR"
 else
-  echo "[2/6] Powerlevel10k は既にインストール済み"
+  echo "[2/7] Powerlevel10k は既にインストール済み"
 fi
 
 # --- zsh プラグイン ---
-echo "[3/6] zsh プラグインをインストール中..."
+echo "[3/7] zsh プラグインをインストール中..."
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
 declare -A plugins=(
@@ -43,7 +71,7 @@ for plugin in "${!plugins[@]}"; do
 done
 
 # --- シンボリックリンク作成 ---
-echo "[4/6] シンボリックリンクを作成中..."
+echo "[4/7] シンボリックリンクを作成中..."
 
 link_file() {
   local src="$1"
@@ -63,7 +91,7 @@ link_file "$SCRIPT_DIR/.bashrc" "$HOME/.bashrc"
 link_file "$SCRIPT_DIR/.tmux.conf" "$HOME/.tmux.conf"
 
 # --- Neovim (LazyVim) ---
-echo "[5/6] Neovim (LazyVim) をセットアップ中..."
+echo "[5/7] Neovim (LazyVim) をセットアップ中..."
 NVIM_DIR="$HOME/.config/nvim"
 if [ ! -d "$NVIM_DIR" ]; then
   echo "  - LazyVim starter をクローン中..."
@@ -75,6 +103,7 @@ cp "$SCRIPT_DIR/nvim/lua/config/lazy.lua" "$NVIM_DIR/lua/config/lazy.lua"
 
 # --- zsh-abbr 略語設定 ---
 echo "[6/7] zsh-abbr の略語設定を配置中..."
+
 mkdir -p "$HOME/.config/zsh-abbr"
 link_file "$SCRIPT_DIR/zsh-abbr/user-abbreviations" "$HOME/.config/zsh-abbr/user-abbreviations"
 
