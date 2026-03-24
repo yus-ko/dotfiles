@@ -7,7 +7,7 @@ echo "=== dotfiles セットアップ ==="
 
 # --- 必要パッケージのインストール ---
 echo "[0/7] 必要パッケージをインストール中..."
-PACKAGES=(zsh git curl tmux)
+PACKAGES=(zsh git curl tmux fzf)
 
 if command -v apt-get &>/dev/null; then
   # Debian / Ubuntu
@@ -149,6 +149,33 @@ mkdir -p "$HOME/.local/bin"
 cp "$SCRIPT_DIR/bin/imgcat" "$HOME/.local/bin/imgcat"
 chmod +x "$HOME/.local/bin/imgcat"
 echo "  - imgcat -> $HOME/.local/bin/imgcat"
+
+# --- uv ---
+echo "[+] uv をインストール中..."
+if command -v uv &>/dev/null; then
+  echo "  - uv は既にインストール済み: $(uv --version)"
+else
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  echo "  - uv をインストールしました"
+fi
+
+# --- eza ---
+echo "[+] eza をインストール中..."
+if command -v eza &>/dev/null || [ -x "$HOME/.local/bin/eza" ]; then
+  echo "  - eza は既にインストール済み"
+else
+  ARCH="$(uname -m)"
+  case "$ARCH" in
+    x86_64)  EZA_ASSET="eza_x86_64-unknown-linux-gnu.tar.gz" ;;
+    aarch64) EZA_ASSET="eza_aarch64-unknown-linux-gnu.tar.gz" ;;
+    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
+  esac
+  mkdir -p "$HOME/.local/bin"
+  curl -fsSL "https://github.com/eza-community/eza/releases/latest/download/${EZA_ASSET}" \
+    | tar xz -C "$HOME/.local/bin"
+  chmod +x "$HOME/.local/bin/eza"
+  echo "  - eza $("$HOME/.local/bin/eza" --version | head -1) をインストールしました"
+fi
 
 # --- デフォルトシェルを zsh に変更 ---
 echo "[+] デフォルトシェルを zsh に変更中..."
