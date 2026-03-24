@@ -7,7 +7,7 @@ echo "=== dotfiles セットアップ ==="
 
 # --- 必要パッケージのインストール ---
 echo "[0/7] 必要パッケージをインストール中..."
-PACKAGES=(zsh git curl neovim tmux)
+PACKAGES=(zsh git curl tmux)
 
 if command -v apt-get &>/dev/null; then
   # Debian / Ubuntu
@@ -90,8 +90,34 @@ link_file "$SCRIPT_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
 link_file "$SCRIPT_DIR/.bashrc" "$HOME/.bashrc"
 link_file "$SCRIPT_DIR/.tmux.conf" "$HOME/.tmux.conf"
 
+# --- Neovim 本体（GitHub Releases から最新版） ---
+echo "[5/8] Neovim をインストール中..."
+if ! command -v nvim &>/dev/null || ! nvim --version | grep -qE 'NVIM v(0\.[1-9][0-9]|[1-9])'; then
+  ARCH="$(uname -m)"
+  case "$ARCH" in
+    x86_64)  NVIM_ASSET="nvim-linux-x86_64.tar.gz" ;;
+    aarch64) NVIM_ASSET="nvim-linux-arm64.tar.gz"  ;;
+    *)        echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
+  esac
+  NVIM_URL="https://github.com/neovim/neovim/releases/latest/download/${NVIM_ASSET}"
+  NVIM_TMP="$(mktemp -d)"
+  echo "  - ${NVIM_URL} からダウンロード中..."
+  curl -fsSL "$NVIM_URL" | tar xz -C "$NVIM_TMP"
+  NVIM_DIR_NAME="${NVIM_ASSET%.tar.gz}"
+  mkdir -p "$HOME/.local"
+  rm -rf "$HOME/.local/${NVIM_DIR_NAME}"
+  mv "$NVIM_TMP/${NVIM_DIR_NAME}" "$HOME/.local/${NVIM_DIR_NAME}"
+  rm -rf "$NVIM_TMP"
+  # PATH に通すシンボリックリンク
+  mkdir -p "$HOME/.local/bin"
+  ln -sf "$HOME/.local/${NVIM_DIR_NAME}/bin/nvim" "$HOME/.local/bin/nvim"
+  echo "  - nvim $("$HOME/.local/bin/nvim" --version | head -1) をインストールしました"
+else
+  echo "  - Neovim は既に要件を満たすバージョンがインストール済み: $(nvim --version | head -1)"
+fi
+
 # --- Neovim (LazyVim) ---
-echo "[5/7] Neovim (LazyVim) をセットアップ中..."
+echo "[6/8] Neovim (LazyVim) をセットアップ中..."
 NVIM_DIR="$HOME/.config/nvim"
 if [ ! -d "$NVIM_DIR" ]; then
   echo "  - LazyVim starter をクローン中..."
@@ -102,13 +128,13 @@ echo "  - カスタマイズファイルを配置中..."
 cp "$SCRIPT_DIR/nvim/lua/config/lazy.lua" "$NVIM_DIR/lua/config/lazy.lua"
 
 # --- zsh-abbr 略語設定 ---
-echo "[6/7] zsh-abbr の略語設定を配置中..."
+echo "[7/8] zsh-abbr の略語設定を配置中..."
 
 mkdir -p "$HOME/.config/zsh-abbr"
 link_file "$SCRIPT_DIR/zsh-abbr/user-abbreviations" "$HOME/.config/zsh-abbr/user-abbreviations"
 
 # --- imgcat ---
-echo "[7/7] imgcat をインストール中..."
+echo "[8/8] imgcat をインストール中..."
 mkdir -p "$HOME/.local/bin"
 cp "$SCRIPT_DIR/bin/imgcat" "$HOME/.local/bin/imgcat"
 chmod +x "$HOME/.local/bin/imgcat"
