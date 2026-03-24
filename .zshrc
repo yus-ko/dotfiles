@@ -114,9 +114,9 @@ source $ZSH/oh-my-zsh.sh
 
 [[ -f "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
 
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
+# alias ll='ls -alF'
+# alias la='ls -A'
+# alias l='ls -CF'
 
 # alias cat=batcat
 # alias vim=nvim
@@ -125,7 +125,7 @@ alias d0="export DISPLAY=:0"
 alias d1="export DISPLAY=:1"
 alias d10="export DISPLAY=:10"
 d0
-alias vnc="x0vncserver -display :0 -passwordfile /home/rtx3090/.vnc/passwd -localhost no"
+alias vnc="x0vncserver -display :0 -passwordfile $HOME/.vnc/passwd -localhost no"
 # alias top="htop"
 
 # alias up="docker compose up -d"
@@ -139,7 +139,7 @@ alias vnc="x0vncserver -display :0 -passwordfile /home/rtx3090/.vnc/passwd -loca
 [[ -x "/home/linuxbrew/.linuxbrew/bin/brew" ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv zsh)"
 
 # bun completions
-[ -s "/home/rtx3090/.bun/_bun" ] && source "/home/rtx3090/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
