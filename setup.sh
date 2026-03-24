@@ -150,6 +150,20 @@ cp "$SCRIPT_DIR/bin/imgcat" "$HOME/.local/bin/imgcat"
 chmod +x "$HOME/.local/bin/imgcat"
 echo "  - imgcat -> $HOME/.local/bin/imgcat"
 
+# --- デフォルトシェルを zsh に変更 ---
+echo "[+] デフォルトシェルを zsh に変更中..."
+ZSH_PATH="$(command -v zsh)"
+if [ -n "$ZSH_PATH" ]; then
+  if ! grep -qF "$ZSH_PATH" /etc/shells 2>/dev/null; then
+    echo "$ZSH_PATH" | sudo -E tee -a /etc/shells
+  fi
+  CHSH="chsh"
+  [ "$(id -u)" -ne 0 ] && CHSH="sudo -E chsh"
+  $CHSH -s "$ZSH_PATH" "$(id -un)" && echo "  - デフォルトシェルを $ZSH_PATH に変更しました"
+else
+  echo "  - WARNING: zsh が見つかりません。デフォルトシェルの変更をスキップします"
+fi
+
 echo ""
 echo "=== セットアップ完了 ==="
 echo "新しいシェルを起動するか、'source ~/.zshrc' を実行してください。"
