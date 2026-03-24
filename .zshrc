@@ -112,7 +112,7 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-. "$HOME/.local/bin/env"
+[[ -f "$HOME/.local/bin/env" ]] && . "$HOME/.local/bin/env"
 
 alias ll='ls -alF'
 alias la='ls -A'
@@ -136,7 +136,7 @@ alias vnc="x0vncserver -display :0 -passwordfile /home/rtx3090/.vnc/passwd -loca
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv zsh)"
+[[ -x "/home/linuxbrew/.linuxbrew/bin/brew" ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv zsh)"
 
 # bun completions
 [ -s "/home/rtx3090/.bun/_bun" ] && source "/home/rtx3090/.bun/_bun"

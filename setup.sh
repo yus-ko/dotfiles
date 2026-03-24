@@ -57,7 +57,6 @@ ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 declare -A plugins=(
   ["zsh-syntax-highlighting"]="https://github.com/zsh-users/zsh-syntax-highlighting.git"
   ["zsh-autosuggestions"]="https://github.com/zsh-users/zsh-autosuggestions.git"
-  ["zsh-abbr"]="https://github.com/olets/zsh-abbr.git"
 )
 
 for plugin in "${!plugins[@]}"; do
@@ -69,6 +68,17 @@ for plugin in "${!plugins[@]}"; do
     echo "  - $plugin は既にインストール済み"
   fi
 done
+
+# zsh-abbr: サブモジュール (zsh-job-queue) を含めてクローン
+ABBR_DIR="$ZSH_CUSTOM/plugins/zsh-abbr"
+if [ ! -f "$ABBR_DIR/zsh-job-queue/zsh-job-queue.zsh" ]; then
+  echo "  - zsh-abbr をインストール中..."
+  rm -rf "$ABBR_DIR"
+  git clone --depth=1 --recurse-submodules --shallow-submodules \
+    https://github.com/olets/zsh-abbr.git "$ABBR_DIR"
+else
+  echo "  - zsh-abbr は既にインストール済み"
+fi
 
 # --- シンボリックリンク作成 ---
 echo "[4/7] シンボリックリンクを作成中..."
