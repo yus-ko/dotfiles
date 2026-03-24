@@ -18,7 +18,7 @@ if command -v apt-get &>/dev/null; then
   if [ ${#MISSING[@]} -gt 0 ]; then
     echo "  - apt で不足パッケージをインストール: ${MISSING[*]}"
     APT="apt-get"
-    [ "$(id -u)" -ne 0 ] && APT="sudo apt-get"
+    [ "$(id -u)" -ne 0 ] && APT="sudo -E apt-get"
     $APT update -qq
     $APT install -y -qq "${MISSING[@]}"
   else
