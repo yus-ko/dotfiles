@@ -61,6 +61,7 @@ link_file "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
 link_file "$SCRIPT_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
 link_file "$SCRIPT_DIR/.bashrc" "$HOME/.bashrc"
 link_file "$SCRIPT_DIR/.tmux.conf" "$HOME/.tmux.conf"
+
 # --- Neovim (LazyVim) ---
 echo "[5/6] Neovim (LazyVim) をセットアップ中..."
 NVIM_DIR="$HOME/.config/nvim"
