@@ -1,6 +1,15 @@
 #!/bin/bash
 # iTerm2 inline image protocol でターミナルに画像を表示する
-printf '\033]1337;File=inline=1;size=%d:%s\a' \
-  "$(wc -c < "$1")" \
-  "$(base64 < "$1" | tr -d '\n')"
+# tmux内ではDCSパススルーでラップする
+
+SIZE=$(wc -c < "$1")
+DATA=$(base64 < "$1" | tr -d '\n')
+SEQ="\033]1337;File=inline=1;size=${SIZE}:${DATA}\a"
+
+if [ -n "$TMUX" ]; then
+  # tmuxパススルー: \ePtmux;\e<seq>\e\\
+  printf "\033Ptmux;\033${SEQ}\033\\"
+else
+  printf "${SEQ}"
+fi
 printf '\n'
