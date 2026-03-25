@@ -178,6 +178,26 @@ else
   echo "  - eza $("$HOME/.local/bin/eza" --version | head -1) をインストールしました"
 fi
 
+# --- lazygit ---
+echo "[+] lazygit をインストール中..."
+if command -v lazygit &>/dev/null || [ -x "$HOME/.local/bin/lazygit" ]; then
+  echo "  - lazygit は既にインストール済み"
+else
+  ARCH="$(uname -m)"
+  case "$ARCH" in
+    x86_64)  LG_ARCH="x86_64" ;;
+    aarch64) LG_ARCH="arm64"  ;;
+    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
+  esac
+  LG_VERSION=$(curl -fsSL "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" \
+    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
+  LG_URL="https://github.com/jesseduffield/lazygit/releases/download/v${LG_VERSION}/lazygit_${LG_VERSION}_Linux_${LG_ARCH}.tar.gz"
+  mkdir -p "$HOME/.local/bin"
+  curl -fsSL "$LG_URL" | tar xz -C "$HOME/.local/bin" lazygit
+  chmod +x "$HOME/.local/bin/lazygit"
+  echo "  - lazygit $("$HOME/.local/bin/lazygit" --version | head -1) をインストールしました"
+fi
+
 # --- デフォルトシェルを zsh に変更 ---
 echo "[+] デフォルトシェルを zsh に変更中..."
 ZSH_PATH="$(command -v zsh)"
