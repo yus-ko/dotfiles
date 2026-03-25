@@ -57,6 +57,7 @@ ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 declare -A plugins=(
   ["zsh-syntax-highlighting"]="https://github.com/zsh-users/zsh-syntax-highlighting.git"
   ["zsh-autosuggestions"]="https://github.com/zsh-users/zsh-autosuggestions.git"
+  ["fzf-tab"]="https://github.com/Aloxaf/fzf-tab.git"
 )
 
 for plugin in "${!plugins[@]}"; do
