@@ -84,11 +84,14 @@ fi
 # --- シンボリックリンク作成 ---
 echo "[4/7] シンボリックリンクを作成中..."
 
+BACKUP_DIR="$SCRIPT_DIR/tmp"
+mkdir -p "$BACKUP_DIR"
+
 link_file() {
   local src="$1"
   local dest="$2"
   if [ -e "$dest" ] || [ -L "$dest" ]; then
-    local backup="${dest}.backup.$(date +%Y%m%d%H%M%S)"
+    local backup="$BACKUP_DIR/$(basename "$dest").backup.$(date +%Y%m%d%H%M%S)"
     echo "  - 既存の $(basename "$dest") をバックアップ: $backup"
     mv "$dest" "$backup"
   fi
