@@ -198,6 +198,26 @@ else
   echo "  - lazygit $("$HOME/.local/bin/lazygit" --version | head -1) をインストールしました"
 fi
 
+# --- lazydocker ---
+echo "[+] lazydocker をインストール中..."
+if command -v lazydocker &>/dev/null || [ -x "$HOME/.local/bin/lazydocker" ]; then
+  echo "  - lazydocker は既にインストール済み"
+else
+  ARCH="$(uname -m)"
+  case "$ARCH" in
+    x86_64)  LD_ARCH="x86_64" ;;
+    aarch64) LD_ARCH="arm64"  ;;
+    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
+  esac
+  LD_VERSION=$(curl -fsSL "https://api.github.com/repos/jesseduffield/lazydocker/releases/latest" \
+    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
+  LD_URL="https://github.com/jesseduffield/lazydocker/releases/download/v${LD_VERSION}/lazydocker_${LD_VERSION}_Linux_${LD_ARCH}.tar.gz"
+  mkdir -p "$HOME/.local/bin"
+  curl -fsSL "$LD_URL" | tar xz -C "$HOME/.local/bin" lazydocker
+  chmod +x "$HOME/.local/bin/lazydocker"
+  echo "  - lazydocker $("$HOME/.local/bin/lazydocker" --version | head -1) をインストールしました"
+fi
+
 # --- デフォルトシェルを zsh に変更 ---
 echo "[+] デフォルトシェルを zsh に変更中..."
 ZSH_PATH="$(command -v zsh)"
