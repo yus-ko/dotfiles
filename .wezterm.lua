@@ -106,4 +106,11 @@ end)
 -- config.key_tables = require("keybinds").key_tables
 -- config.leader = { key = "q", mods = "CTRL", timeout_milliseconds = 2000 }
 
+-- Shift+PageUp/PageDownをtmuxに渡す
+local act = wezterm.action
+config.keys = {
+  { key = "PageUp", mods = "SHIFT", action = act.SendKey({ key = "PageUp", mods = "SHIFT" }) },
+  { key = "PageDown", mods = "SHIFT", action = act.SendKey({ key = "PageDown", mods = "SHIFT" }) },
+}
+
 return config
