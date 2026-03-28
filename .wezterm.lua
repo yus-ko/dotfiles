@@ -20,7 +20,28 @@ config.automatically_reload_config = true
 config.use_ime = true
 -- config.front_end = "OpenGL"
 config.win32_system_backdrop = "Acrylic"
-config.color_scheme = "jubi"
+-- 起動ごとにランダムなダークテーマを選択
+local schemes = wezterm.color.get_builtin_schemes()
+local dark_schemes = {}
+for name, scheme in pairs(schemes) do
+	local bg = wezterm.color.parse(scheme.background)
+	local h, s, l, a = bg:hsla()
+	if l < 0.4 then
+		table.insert(dark_schemes, name)
+	end
+end
+local chosen_scheme = dark_schemes[math.random(#dark_schemes)]
+config.color_scheme = chosen_scheme
+wezterm.log_info("Color scheme: " .. chosen_scheme)
+
+wezterm.on("update-status", function(window, pane)
+	if not window:get_dimensions().is_full_screen then
+		window:set_right_status(wezterm.format({
+			{ Foreground = { Color = "#808080" } },
+			{ Text = " " .. chosen_scheme .. " " },
+		}))
+	end
+end)
 -- config.window_padding = {
 -- left = 0,
 -- right = 0,
