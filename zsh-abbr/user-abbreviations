@@ -2,6 +2,7 @@ abbr "add_serena"="claude mcp add serena -- uvx --from git+https://github.com/or
 abbr "bat"="batcat"
 abbr "build"="docker compose up -d --build"
 abbr "c"="cd \$(fd --type d | fzf)"
+abbr "cd"="z"
 abbr "cca"="claude --permission-mode auto --remote-control"
 abbr "down"="docker compose down"
 abbr "gitlog"="git log --graph --oneline --all"
