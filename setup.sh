@@ -189,7 +189,7 @@ if command -v duf &>/dev/null || [ -x "$HOME/.local/bin/duf" ]; then
 else
   ARCH="$(uname -m)"
   case "$ARCH" in
-    x86_64)  DUF_ARCH="amd64" ;;
+    x86_64)  DUF_ARCH="x86_64" ;;
     aarch64) DUF_ARCH="arm64" ;;
     *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
   esac
