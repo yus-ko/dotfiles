@@ -102,7 +102,8 @@ link_file() {
 link_file "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
 link_file "$SCRIPT_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
 link_file "$SCRIPT_DIR/.bashrc" "$HOME/.bashrc"
-link_file "$SCRIPT_DIR/.tmux.conf" "$HOME/.tmux.conf"
+mkdir -p "$HOME/.config/tmux"
+link_file "$SCRIPT_DIR/tmux.conf.local" "$HOME/.config/tmux/tmux.conf.local"
 
 # --- Neovim 本体（GitHub Releases から最新版） ---
 echo "[5/8] Neovim をインストール中..."
