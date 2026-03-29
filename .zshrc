@@ -133,6 +133,19 @@ alias vnc="x0vncserver -display :0 -passwordfile $HOME/.vnc/passwd -localhost no
 # alias down="docker compose down"
 # alias restart="docker compose restart"
 
+# zoxide (スマートcd)
+command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
+
+# yazi: 終了時にカレントディレクトリを引き継ぐラッパー
+function y() {
+  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+  yazi "$@" --cwd-file="$tmp"
+  if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+    builtin cd -- "$cwd"
+  fi
+  rm -f -- "$tmp"
+}
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 

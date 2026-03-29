@@ -244,6 +244,51 @@ else
   echo "  - tealdeer $("$HOME/.local/bin/tldr" --version) をインストールしました"
 fi
 
+# --- yazi ---
+echo "[+] yazi をインストール中..."
+if command -v yazi &>/dev/null || [ -x "$HOME/.local/bin/yazi" ]; then
+  echo "  - yazi は既にインストール済み"
+else
+  ARCH="$(uname -m)"
+  case "$ARCH" in
+    x86_64)  YAZI_ARCH="x86_64-unknown-linux-gnu" ;;
+    aarch64) YAZI_ARCH="aarch64-unknown-linux-gnu" ;;
+    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
+  esac
+  YAZI_VERSION=$(curl -fsSL "https://api.github.com/repos/sxyazi/yazi/releases/latest" \
+    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
+  YAZI_URL="https://github.com/sxyazi/yazi/releases/download/v${YAZI_VERSION}/yazi-${YAZI_ARCH}.zip"
+  YAZI_TMP="$(mktemp -d)"
+  curl -fsSL "$YAZI_URL" -o "$YAZI_TMP/yazi.zip"
+  unzip -q "$YAZI_TMP/yazi.zip" -d "$YAZI_TMP"
+  mkdir -p "$HOME/.local/bin"
+  cp "$YAZI_TMP"/yazi-*/yazi "$HOME/.local/bin/yazi"
+  cp "$YAZI_TMP"/yazi-*/ya "$HOME/.local/bin/ya"
+  chmod +x "$HOME/.local/bin/yazi" "$HOME/.local/bin/ya"
+  rm -rf "$YAZI_TMP"
+  echo "  - yazi $("$HOME/.local/bin/yazi" --version) をインストールしました"
+fi
+
+# --- zoxide ---
+echo "[+] zoxide をインストール中..."
+if command -v zoxide &>/dev/null || [ -x "$HOME/.local/bin/zoxide" ]; then
+  echo "  - zoxide は既にインストール済み"
+else
+  ARCH="$(uname -m)"
+  case "$ARCH" in
+    x86_64)  ZO_ARCH="x86_64-unknown-linux-musl" ;;
+    aarch64) ZO_ARCH="aarch64-unknown-linux-musl" ;;
+    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
+  esac
+  ZO_VERSION=$(curl -fsSL "https://api.github.com/repos/ajeetdsouza/zoxide/releases/latest" \
+    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
+  ZO_URL="https://github.com/ajeetdsouza/zoxide/releases/download/v${ZO_VERSION}/zoxide-${ZO_VERSION}-${ZO_ARCH}.tar.gz"
+  mkdir -p "$HOME/.local/bin"
+  curl -fsSL "$ZO_URL" | tar xz -C "$HOME/.local/bin" zoxide
+  chmod +x "$HOME/.local/bin/zoxide"
+  echo "  - zoxide $("$HOME/.local/bin/zoxide" --version) をインストールしました"
+fi
+
 # --- duf ---
 echo "[+] duf をインストール中..."
 if command -v duf &>/dev/null || [ -x "$HOME/.local/bin/duf" ]; then
