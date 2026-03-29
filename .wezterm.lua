@@ -16,6 +16,7 @@ config.default_prog = { "powershell.exe", "-NoLogo" }
 -- }
 
 config.automatically_reload_config = true
+config.audible_bell = "Disabled"
 -- config.font_size = 12.0
 config.use_ime = true
 -- config.front_end = "OpenGL"
