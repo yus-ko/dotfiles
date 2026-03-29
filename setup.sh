@@ -182,6 +182,29 @@ else
   echo "  - eza $("$HOME/.local/bin/eza" --version | head -1) をインストールしました"
 fi
 
+# --- dust ---
+echo "[+] dust をインストール中..."
+if command -v dust &>/dev/null || [ -x "$HOME/.local/bin/dust" ]; then
+  echo "  - dust は既にインストール済み"
+else
+  ARCH="$(uname -m)"
+  case "$ARCH" in
+    x86_64)  DUST_ARCH="x86_64-unknown-linux-gnu" ;;
+    aarch64) DUST_ARCH="aarch64-unknown-linux-gnu" ;;
+    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
+  esac
+  DUST_VERSION=$(curl -fsSL "https://api.github.com/repos/bootandy/dust/releases/latest" \
+    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
+  DUST_URL="https://github.com/bootandy/dust/releases/download/v${DUST_VERSION}/dust-v${DUST_VERSION}-${DUST_ARCH}.tar.gz"
+  DUST_TMP="$(mktemp -d)"
+  curl -fsSL "$DUST_URL" | tar xz -C "$DUST_TMP"
+  mkdir -p "$HOME/.local/bin"
+  cp "$DUST_TMP"/dust-v*/dust "$HOME/.local/bin/dust"
+  chmod +x "$HOME/.local/bin/dust"
+  rm -rf "$DUST_TMP"
+  echo "  - dust $("$HOME/.local/bin/dust" --version) をインストールしました"
+fi
+
 # --- fd ---
 echo "[+] fd をインストール中..."
 if command -v fd &>/dev/null || [ -x "$HOME/.local/bin/fd" ]; then
