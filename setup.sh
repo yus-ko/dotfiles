@@ -289,6 +289,29 @@ else
   echo "  - zoxide $("$HOME/.local/bin/zoxide" --version) をインストールしました"
 fi
 
+# --- atuin ---
+echo "[+] atuin をインストール中..."
+if command -v atuin &>/dev/null || [ -x "$HOME/.local/bin/atuin" ]; then
+  echo "  - atuin は既にインストール済み"
+else
+  ARCH="$(uname -m)"
+  case "$ARCH" in
+    x86_64)  ATUIN_ARCH="x86_64-unknown-linux-gnu" ;;
+    aarch64) ATUIN_ARCH="aarch64-unknown-linux-gnu" ;;
+    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
+  esac
+  ATUIN_VERSION=$(curl -fsSL "https://api.github.com/repos/atuinsh/atuin/releases/latest" \
+    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
+  ATUIN_URL="https://github.com/atuinsh/atuin/releases/download/v${ATUIN_VERSION}/atuin-${ATUIN_ARCH}.tar.gz"
+  ATUIN_TMP="$(mktemp -d)"
+  curl -fsSL "$ATUIN_URL" | tar xz -C "$ATUIN_TMP"
+  mkdir -p "$HOME/.local/bin"
+  cp "$ATUIN_TMP"/atuin-*/atuin "$HOME/.local/bin/atuin"
+  chmod +x "$HOME/.local/bin/atuin"
+  rm -rf "$ATUIN_TMP"
+  echo "  - atuin $("$HOME/.local/bin/atuin" --version) をインストールしました"
+fi
+
 # --- duf ---
 echo "[+] duf をインストール中..."
 if command -v duf &>/dev/null || [ -x "$HOME/.local/bin/duf" ]; then

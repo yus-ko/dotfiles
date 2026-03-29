@@ -133,6 +133,9 @@ alias vnc="x0vncserver -display :0 -passwordfile $HOME/.vnc/passwd -localhost no
 # alias down="docker compose down"
 # alias restart="docker compose restart"
 
+# atuin (シェル履歴管理)
+command -v atuin &>/dev/null && eval "$(atuin init zsh)"
+
 # zoxide (スマートcd)
 command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
 
