@@ -3,6 +3,26 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+# --- オプション解析 ---
+AUTO_YES=false
+for arg in "$@"; do
+  case "$arg" in
+    -y|--yes) AUTO_YES=true ;;
+  esac
+done
+
+confirm() {
+  local name="$1"
+  if [ "$AUTO_YES" = true ]; then
+    return 0
+  fi
+  read -rp "  $name をインストールしますか? [Y/n] " answer
+  case "$answer" in
+    [nN]*) return 1 ;;
+    *) return 0 ;;
+  esac
+}
+
 echo "=== dotfiles セットアップ ==="
 
 # --- 必要パッケージのインストール ---
@@ -155,20 +175,24 @@ cp "$SCRIPT_DIR/bin/imgcat" "$HOME/.local/bin/imgcat"
 chmod +x "$HOME/.local/bin/imgcat"
 echo "  - imgcat -> $HOME/.local/bin/imgcat"
 
+# =============================================================================
+# オプショナルCLIツール
+# =============================================================================
+echo ""
+echo "=== オプショナルCLIツール ==="
+
 # --- uv ---
-echo "[+] uv をインストール中..."
 if command -v uv &>/dev/null; then
-  echo "  - uv は既にインストール済み: $(uv --version)"
-else
+  echo "[uv] 既にインストール済み: $(uv --version)"
+elif confirm "uv (Python パッケージマネージャ)"; then
   curl -LsSf https://astral.sh/uv/install.sh | sh
   echo "  - uv をインストールしました"
 fi
 
 # --- eza ---
-echo "[+] eza をインストール中..."
 if command -v eza &>/dev/null || [ -x "$HOME/.local/bin/eza" ]; then
-  echo "  - eza は既にインストール済み"
-else
+  echo "[eza] 既にインストール済み"
+elif confirm "eza (モダンな ls)"; then
   ARCH="$(uname -m)"
   case "$ARCH" in
     x86_64)  EZA_ASSET="eza_x86_64-unknown-linux-gnu.tar.gz" ;;
@@ -182,11 +206,73 @@ else
   echo "  - eza $("$HOME/.local/bin/eza" --version | head -1) をインストールしました"
 fi
 
+# --- fd ---
+if command -v fd &>/dev/null || [ -x "$HOME/.local/bin/fd" ]; then
+  echo "[fd] 既にインストール済み"
+elif confirm "fd (モダンな find)"; then
+  ARCH="$(uname -m)"
+  case "$ARCH" in
+    x86_64)  FD_ARCH="x86_64-unknown-linux-gnu" ;;
+    aarch64) FD_ARCH="aarch64-unknown-linux-gnu" ;;
+    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
+  esac
+  FD_VERSION=$(curl -fsSL "https://api.github.com/repos/sharkdp/fd/releases/latest" \
+    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
+  FD_URL="https://github.com/sharkdp/fd/releases/download/v${FD_VERSION}/fd-v${FD_VERSION}-${FD_ARCH}.tar.gz"
+  FD_TMP="$(mktemp -d)"
+  curl -fsSL "$FD_URL" | tar xz -C "$FD_TMP"
+  mkdir -p "$HOME/.local/bin"
+  cp "$FD_TMP"/fd-v*/fd "$HOME/.local/bin/fd"
+  chmod +x "$HOME/.local/bin/fd"
+  rm -rf "$FD_TMP"
+  echo "  - fd $("$HOME/.local/bin/fd" --version) をインストールしました"
+fi
+
+# --- dust ---
+if command -v dust &>/dev/null || [ -x "$HOME/.local/bin/dust" ]; then
+  echo "[dust] 既にインストール済み"
+elif confirm "dust (モダンな du)"; then
+  ARCH="$(uname -m)"
+  case "$ARCH" in
+    x86_64)  DUST_ARCH="x86_64-unknown-linux-gnu" ;;
+    aarch64) DUST_ARCH="aarch64-unknown-linux-gnu" ;;
+    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
+  esac
+  DUST_VERSION=$(curl -fsSL "https://api.github.com/repos/bootandy/dust/releases/latest" \
+    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
+  DUST_URL="https://github.com/bootandy/dust/releases/download/v${DUST_VERSION}/dust-v${DUST_VERSION}-${DUST_ARCH}.tar.gz"
+  DUST_TMP="$(mktemp -d)"
+  curl -fsSL "$DUST_URL" | tar xz -C "$DUST_TMP"
+  mkdir -p "$HOME/.local/bin"
+  cp "$DUST_TMP"/dust-v*/dust "$HOME/.local/bin/dust"
+  chmod +x "$HOME/.local/bin/dust"
+  rm -rf "$DUST_TMP"
+  echo "  - dust $("$HOME/.local/bin/dust" --version) をインストールしました"
+fi
+
+# --- duf ---
+if command -v duf &>/dev/null || [ -x "$HOME/.local/bin/duf" ]; then
+  echo "[duf] 既にインストール済み"
+elif confirm "duf (モダンな df)"; then
+  ARCH="$(uname -m)"
+  case "$ARCH" in
+    x86_64)  DUF_ARCH="x86_64" ;;
+    aarch64) DUF_ARCH="arm64" ;;
+    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
+  esac
+  DUF_VERSION=$(curl -fsSL "https://api.github.com/repos/muesli/duf/releases/latest" \
+    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
+  DUF_URL="https://github.com/muesli/duf/releases/download/v${DUF_VERSION}/duf_${DUF_VERSION}_linux_${DUF_ARCH}.tar.gz"
+  mkdir -p "$HOME/.local/bin"
+  curl -fsSL "$DUF_URL" | tar xz -C "$HOME/.local/bin" duf
+  chmod +x "$HOME/.local/bin/duf"
+  echo "  - duf $("$HOME/.local/bin/duf" --version) をインストールしました"
+fi
+
 # --- procs ---
-echo "[+] procs をインストール中..."
 if command -v procs &>/dev/null || [ -x "$HOME/.local/bin/procs" ]; then
-  echo "  - procs は既にインストール済み"
-else
+  echo "[procs] 既にインストール済み"
+elif confirm "procs (モダンな ps)"; then
   ARCH="$(uname -m)"
   case "$ARCH" in
     x86_64)  PROCS_ARCH="x86_64" ;;
@@ -207,10 +293,9 @@ else
 fi
 
 # --- bottom ---
-echo "[+] bottom をインストール中..."
 if command -v btm &>/dev/null || [ -x "$HOME/.local/bin/btm" ]; then
-  echo "  - bottom は既にインストール済み"
-else
+  echo "[bottom] 既にインストール済み"
+elif confirm "bottom (モダンな top)"; then
   ARCH="$(uname -m)"
   case "$ARCH" in
     x86_64)  BTM_ARCH="x86_64-unknown-linux-gnu" ;;
@@ -227,10 +312,9 @@ else
 fi
 
 # --- tealdeer ---
-echo "[+] tealdeer をインストール中..."
 if command -v tldr &>/dev/null || [ -x "$HOME/.local/bin/tldr" ]; then
-  echo "  - tealdeer は既にインストール済み"
-else
+  echo "[tealdeer] 既にインストール済み"
+elif confirm "tealdeer (tldr コマンドチートシート)"; then
   ARCH="$(uname -m)"
   case "$ARCH" in
     x86_64)  TLDR_ARCH="x86_64" ;;
@@ -245,10 +329,9 @@ else
 fi
 
 # --- yazi ---
-echo "[+] yazi をインストール中..."
 if command -v yazi &>/dev/null || [ -x "$HOME/.local/bin/yazi" ]; then
-  echo "  - yazi は既にインストール済み"
-else
+  echo "[yazi] 既にインストール済み"
+elif confirm "yazi (ターミナルファイルマネージャ)"; then
   ARCH="$(uname -m)"
   case "$ARCH" in
     x86_64)  YAZI_ARCH="x86_64-unknown-linux-gnu" ;;
@@ -270,10 +353,9 @@ else
 fi
 
 # --- zoxide ---
-echo "[+] zoxide をインストール中..."
 if command -v zoxide &>/dev/null || [ -x "$HOME/.local/bin/zoxide" ]; then
-  echo "  - zoxide は既にインストール済み"
-else
+  echo "[zoxide] 既にインストール済み"
+elif confirm "zoxide (スマート cd)"; then
   ARCH="$(uname -m)"
   case "$ARCH" in
     x86_64)  ZO_ARCH="x86_64-unknown-linux-musl" ;;
@@ -290,10 +372,9 @@ else
 fi
 
 # --- atuin ---
-echo "[+] atuin をインストール中..."
 if command -v atuin &>/dev/null || [ -x "$HOME/.local/bin/atuin" ]; then
-  echo "  - atuin は既にインストール済み"
-else
+  echo "[atuin] 既にインストール済み"
+elif confirm "atuin (シェル履歴管理)"; then
   ARCH="$(uname -m)"
   case "$ARCH" in
     x86_64)  ATUIN_ARCH="x86_64-unknown-linux-gnu" ;;
@@ -312,77 +393,10 @@ else
   echo "  - atuin $("$HOME/.local/bin/atuin" --version) をインストールしました"
 fi
 
-# --- duf ---
-echo "[+] duf をインストール中..."
-if command -v duf &>/dev/null || [ -x "$HOME/.local/bin/duf" ]; then
-  echo "  - duf は既にインストール済み"
-else
-  ARCH="$(uname -m)"
-  case "$ARCH" in
-    x86_64)  DUF_ARCH="x86_64" ;;
-    aarch64) DUF_ARCH="arm64" ;;
-    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
-  esac
-  DUF_VERSION=$(curl -fsSL "https://api.github.com/repos/muesli/duf/releases/latest" \
-    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
-  DUF_URL="https://github.com/muesli/duf/releases/download/v${DUF_VERSION}/duf_${DUF_VERSION}_linux_${DUF_ARCH}.tar.gz"
-  mkdir -p "$HOME/.local/bin"
-  curl -fsSL "$DUF_URL" | tar xz -C "$HOME/.local/bin" duf
-  chmod +x "$HOME/.local/bin/duf"
-  echo "  - duf $("$HOME/.local/bin/duf" --version) をインストールしました"
-fi
-
-# --- dust ---
-echo "[+] dust をインストール中..."
-if command -v dust &>/dev/null || [ -x "$HOME/.local/bin/dust" ]; then
-  echo "  - dust は既にインストール済み"
-else
-  ARCH="$(uname -m)"
-  case "$ARCH" in
-    x86_64)  DUST_ARCH="x86_64-unknown-linux-gnu" ;;
-    aarch64) DUST_ARCH="aarch64-unknown-linux-gnu" ;;
-    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
-  esac
-  DUST_VERSION=$(curl -fsSL "https://api.github.com/repos/bootandy/dust/releases/latest" \
-    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
-  DUST_URL="https://github.com/bootandy/dust/releases/download/v${DUST_VERSION}/dust-v${DUST_VERSION}-${DUST_ARCH}.tar.gz"
-  DUST_TMP="$(mktemp -d)"
-  curl -fsSL "$DUST_URL" | tar xz -C "$DUST_TMP"
-  mkdir -p "$HOME/.local/bin"
-  cp "$DUST_TMP"/dust-v*/dust "$HOME/.local/bin/dust"
-  chmod +x "$HOME/.local/bin/dust"
-  rm -rf "$DUST_TMP"
-  echo "  - dust $("$HOME/.local/bin/dust" --version) をインストールしました"
-fi
-
-# --- fd ---
-echo "[+] fd をインストール中..."
-if command -v fd &>/dev/null || [ -x "$HOME/.local/bin/fd" ]; then
-  echo "  - fd は既にインストール済み"
-else
-  ARCH="$(uname -m)"
-  case "$ARCH" in
-    x86_64)  FD_ARCH="x86_64-unknown-linux-gnu" ;;
-    aarch64) FD_ARCH="aarch64-unknown-linux-gnu" ;;
-    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
-  esac
-  FD_VERSION=$(curl -fsSL "https://api.github.com/repos/sharkdp/fd/releases/latest" \
-    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
-  FD_URL="https://github.com/sharkdp/fd/releases/download/v${FD_VERSION}/fd-v${FD_VERSION}-${FD_ARCH}.tar.gz"
-  FD_TMP="$(mktemp -d)"
-  curl -fsSL "$FD_URL" | tar xz -C "$FD_TMP"
-  mkdir -p "$HOME/.local/bin"
-  cp "$FD_TMP"/fd-v*/fd "$HOME/.local/bin/fd"
-  chmod +x "$HOME/.local/bin/fd"
-  rm -rf "$FD_TMP"
-  echo "  - fd $("$HOME/.local/bin/fd" --version) をインストールしました"
-fi
-
 # --- lazygit ---
-echo "[+] lazygit をインストール中..."
 if command -v lazygit &>/dev/null || [ -x "$HOME/.local/bin/lazygit" ]; then
-  echo "  - lazygit は既にインストール済み"
-else
+  echo "[lazygit] 既にインストール済み"
+elif confirm "lazygit (Git TUI)"; then
   ARCH="$(uname -m)"
   case "$ARCH" in
     x86_64)  LG_ARCH="x86_64" ;;
@@ -399,10 +413,9 @@ else
 fi
 
 # --- lazydocker ---
-echo "[+] lazydocker をインストール中..."
 if command -v lazydocker &>/dev/null || [ -x "$HOME/.local/bin/lazydocker" ]; then
-  echo "  - lazydocker は既にインストール済み"
-else
+  echo "[lazydocker] 既にインストール済み"
+elif confirm "lazydocker (Docker TUI)"; then
   ARCH="$(uname -m)"
   case "$ARCH" in
     x86_64)  LD_ARCH="x86_64" ;;
@@ -419,6 +432,7 @@ else
 fi
 
 # --- デフォルトシェルを zsh に変更 ---
+echo ""
 echo "[+] デフォルトシェルを zsh に変更中..."
 ZSH_PATH="$(command -v zsh)"
 if [ -n "$ZSH_PATH" ]; then
