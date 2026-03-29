@@ -182,6 +182,68 @@ else
   echo "  - eza $("$HOME/.local/bin/eza" --version | head -1) をインストールしました"
 fi
 
+# --- procs ---
+echo "[+] procs をインストール中..."
+if command -v procs &>/dev/null || [ -x "$HOME/.local/bin/procs" ]; then
+  echo "  - procs は既にインストール済み"
+else
+  ARCH="$(uname -m)"
+  case "$ARCH" in
+    x86_64)  PROCS_ARCH="x86_64" ;;
+    aarch64) PROCS_ARCH="aarch64" ;;
+    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
+  esac
+  PROCS_VERSION=$(curl -fsSL "https://api.github.com/repos/dalance/procs/releases/latest" \
+    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
+  PROCS_URL="https://github.com/dalance/procs/releases/download/v${PROCS_VERSION}/procs-v${PROCS_VERSION}-${PROCS_ARCH}-linux.zip"
+  PROCS_TMP="$(mktemp -d)"
+  curl -fsSL "$PROCS_URL" -o "$PROCS_TMP/procs.zip"
+  unzip -q "$PROCS_TMP/procs.zip" -d "$PROCS_TMP"
+  mkdir -p "$HOME/.local/bin"
+  cp "$PROCS_TMP/procs" "$HOME/.local/bin/procs"
+  chmod +x "$HOME/.local/bin/procs"
+  rm -rf "$PROCS_TMP"
+  echo "  - procs $("$HOME/.local/bin/procs" --version) をインストールしました"
+fi
+
+# --- bottom ---
+echo "[+] bottom をインストール中..."
+if command -v btm &>/dev/null || [ -x "$HOME/.local/bin/btm" ]; then
+  echo "  - bottom は既にインストール済み"
+else
+  ARCH="$(uname -m)"
+  case "$ARCH" in
+    x86_64)  BTM_ARCH="x86_64-unknown-linux-gnu" ;;
+    aarch64) BTM_ARCH="aarch64-unknown-linux-gnu" ;;
+    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
+  esac
+  BTM_VERSION=$(curl -fsSL "https://api.github.com/repos/ClementTsang/bottom/releases/latest" \
+    | grep '"tag_name"' | sed 's/.*"\([^"]*\)".*/\1/')
+  BTM_URL="https://github.com/ClementTsang/bottom/releases/download/${BTM_VERSION}/bottom_${BTM_ARCH}.tar.gz"
+  mkdir -p "$HOME/.local/bin"
+  curl -fsSL "$BTM_URL" | tar xz -C "$HOME/.local/bin" btm
+  chmod +x "$HOME/.local/bin/btm"
+  echo "  - bottom $("$HOME/.local/bin/btm" --version) をインストールしました"
+fi
+
+# --- tealdeer ---
+echo "[+] tealdeer をインストール中..."
+if command -v tldr &>/dev/null || [ -x "$HOME/.local/bin/tldr" ]; then
+  echo "  - tealdeer は既にインストール済み"
+else
+  ARCH="$(uname -m)"
+  case "$ARCH" in
+    x86_64)  TLDR_ARCH="x86_64" ;;
+    aarch64) TLDR_ARCH="aarch64" ;;
+    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
+  esac
+  mkdir -p "$HOME/.local/bin"
+  curl -fsSL "https://github.com/tealdeer-rs/tealdeer/releases/latest/download/tealdeer-linux-${TLDR_ARCH}-musl" \
+    -o "$HOME/.local/bin/tldr"
+  chmod +x "$HOME/.local/bin/tldr"
+  echo "  - tealdeer $("$HOME/.local/bin/tldr" --version) をインストールしました"
+fi
+
 # --- duf ---
 echo "[+] duf をインストール中..."
 if command -v duf &>/dev/null || [ -x "$HOME/.local/bin/duf" ]; then
