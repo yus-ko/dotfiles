@@ -133,7 +133,8 @@ tmux_conf_theme_window_bg="default"
 tmux_conf_theme_highlight_focused_pane=true
 
 # focused pane colours:
-tmux_conf_theme_focused_pane_bg="$tmux_conf_theme_colour_2"
+# weztermが書き出した明るめ背景色を読み込む（なければcolour8にフォールバック）
+tmux_conf_theme_focused_pane_bg=$(cat ~/.config/tmux/focused_bg_color 2>/dev/null || echo "$tmux_conf_theme_colour_2")
 
 # pane border style, possible values are:
 #   - thin (default)

@@ -35,6 +35,24 @@ local chosen_scheme = dark_schemes[math.random(#dark_schemes)]
 config.color_scheme = chosen_scheme
 wezterm.log_info("Color scheme: " .. chosen_scheme)
 
+-- 背景色を少し明るくしてtmux用にファイルへ書き出す
+local chosen_bg = schemes[chosen_scheme].background
+local r = tonumber(chosen_bg:sub(2, 3), 16)
+local g = tonumber(chosen_bg:sub(4, 5), 16)
+local b = tonumber(chosen_bg:sub(6, 7), 16)
+local offset = 25
+r = math.min(r + offset, 255)
+g = math.min(g + offset, 255)
+b = math.min(b + offset, 255)
+local brightened_bg = string.format("#%02x%02x%02x", r, g, b)
+local tmux_dir = os.getenv("HOME") .. "/.config/tmux"
+os.execute("mkdir -p " .. tmux_dir)
+local f = io.open(tmux_dir .. "/focused_bg_color", "w")
+if f then
+	f:write(brightened_bg)
+	f:close()
+end
+
 wezterm.on("update-status", function(window, pane)
 	if not window:get_dimensions().is_full_screen then
 		window:set_right_status(wezterm.format({
