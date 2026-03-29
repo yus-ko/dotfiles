@@ -474,4 +474,8 @@ fi
 
 echo ""
 echo "=== セットアップ完了 ==="
-echo "新しいシェルを起動するか、'source ~/.zshrc' を実行してください。"
+
+if [ "$(basename "$SHELL")" != "zsh" ] && command -v zsh &>/dev/null; then
+  echo "zsh を起動します..."
+  exec zsh -l
+fi
