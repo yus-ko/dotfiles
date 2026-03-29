@@ -182,6 +182,29 @@ else
   echo "  - eza $("$HOME/.local/bin/eza" --version | head -1) をインストールしました"
 fi
 
+# --- fd ---
+echo "[+] fd をインストール中..."
+if command -v fd &>/dev/null || [ -x "$HOME/.local/bin/fd" ]; then
+  echo "  - fd は既にインストール済み"
+else
+  ARCH="$(uname -m)"
+  case "$ARCH" in
+    x86_64)  FD_ARCH="x86_64-unknown-linux-gnu" ;;
+    aarch64) FD_ARCH="aarch64-unknown-linux-gnu" ;;
+    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
+  esac
+  FD_VERSION=$(curl -fsSL "https://api.github.com/repos/sharkdp/fd/releases/latest" \
+    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
+  FD_URL="https://github.com/sharkdp/fd/releases/download/v${FD_VERSION}/fd-v${FD_VERSION}-${FD_ARCH}.tar.gz"
+  FD_TMP="$(mktemp -d)"
+  curl -fsSL "$FD_URL" | tar xz -C "$FD_TMP"
+  mkdir -p "$HOME/.local/bin"
+  cp "$FD_TMP"/fd-v*/fd "$HOME/.local/bin/fd"
+  chmod +x "$HOME/.local/bin/fd"
+  rm -rf "$FD_TMP"
+  echo "  - fd $("$HOME/.local/bin/fd" --version) をインストールしました"
+fi
+
 # --- lazygit ---
 echo "[+] lazygit をインストール中..."
 if command -v lazygit &>/dev/null || [ -x "$HOME/.local/bin/lazygit" ]; then
