@@ -1,7 +1,7 @@
 abbr "add_serena"="claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context claude-code --project \$(pwd)"
 abbr "bat"="batcat"
 abbr "build"="docker compose up -d --build"
-abbr "c"="cd \$(fd --type d | fzf)"
+abbr "c"="z \$(fd --type d | fzf)"
 abbr "cd"="z"
 abbr "cca"="claude --permission-mode auto --remote-control"
 abbr "down"="docker compose down"
