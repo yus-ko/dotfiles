@@ -5,9 +5,31 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # --- オプション解析 ---
 AUTO_YES=false
+
+usage() {
+  cat <<'USAGE'
+Usage: ./setup.sh [OPTIONS]
+
+dotfiles のセットアップスクリプト
+
+Options:
+  -y, --yes   すべての確認をスキップして自動インストール
+  -h, --help  このヘルプを表示
+
+セットアップ内容:
+  1. 必要パッケージ (zsh, git, curl, tmux, fzf)
+  2. Oh My Zsh / Powerlevel10k / zsh プラグイン
+  3. シンボリックリンク (.zshrc, .p10k.zsh, .bashrc, tmux.conf.local, zsh-abbr)
+  4. Neovim (LazyVim)
+  5. オプショナルCLIツール (eza, fd, dust, duf, procs, bottom, tealdeer, yazi, zoxide, atuin, lazygit, lazydocker, uv)
+USAGE
+  exit 0
+}
+
 for arg in "$@"; do
   case "$arg" in
     -y|--yes) AUTO_YES=true ;;
+    -h|--help) usage ;;
   esac
 done
 
@@ -16,7 +38,7 @@ confirm() {
   if [ "$AUTO_YES" = true ]; then
     return 0
   fi
-  read -rp "  $name をインストールしますか? [Y/n] " answer
+  read -rp "  $name [Y/n] " answer
   case "$answer" in
     [nN]*) return 1 ;;
     *) return 0 ;;
@@ -119,11 +141,13 @@ link_file() {
   echo "  - $(basename "$dest") -> $src"
 }
 
-link_file "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
-link_file "$SCRIPT_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
-link_file "$SCRIPT_DIR/.bashrc" "$HOME/.bashrc"
-mkdir -p "$HOME/.config/tmux"
-link_file "$SCRIPT_DIR/tmux.conf.local" "$HOME/.config/tmux/tmux.conf.local"
+confirm ".zshrc のシンボリックリンクを作成しますか?" && link_file "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
+confirm ".p10k.zsh のシンボリックリンクを作成しますか?" && link_file "$SCRIPT_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
+confirm ".bashrc のシンボリックリンクを作成しますか?" && link_file "$SCRIPT_DIR/.bashrc" "$HOME/.bashrc"
+if confirm "tmux.conf.local のシンボリックリンクを作成しますか?"; then
+  mkdir -p "$HOME/.config/tmux"
+  link_file "$SCRIPT_DIR/tmux.conf.local" "$HOME/.config/tmux/tmux.conf.local"
+fi
 
 # --- Neovim 本体（GitHub Releases から最新版） ---
 echo "[5/8] Neovim をインストール中..."
@@ -165,8 +189,10 @@ cp "$SCRIPT_DIR/nvim/lua/config/lazy.lua" "$NVIM_DIR/lua/config/lazy.lua"
 # --- zsh-abbr 略語設定 ---
 echo "[7/8] zsh-abbr の略語設定を配置中..."
 
-mkdir -p "$HOME/.config/zsh-abbr"
-link_file "$SCRIPT_DIR/zsh-abbr/user-abbreviations" "$HOME/.config/zsh-abbr/user-abbreviations"
+if confirm "zsh-abbr/user-abbreviations のシンボリックリンクを作成しますか?"; then
+  mkdir -p "$HOME/.config/zsh-abbr"
+  link_file "$SCRIPT_DIR/zsh-abbr/user-abbreviations" "$HOME/.config/zsh-abbr/user-abbreviations"
+fi
 
 # --- imgcat ---
 echo "[8/8] imgcat をインストール中..."
