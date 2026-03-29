@@ -182,6 +182,26 @@ else
   echo "  - eza $("$HOME/.local/bin/eza" --version | head -1) をインストールしました"
 fi
 
+# --- duf ---
+echo "[+] duf をインストール中..."
+if command -v duf &>/dev/null || [ -x "$HOME/.local/bin/duf" ]; then
+  echo "  - duf は既にインストール済み"
+else
+  ARCH="$(uname -m)"
+  case "$ARCH" in
+    x86_64)  DUF_ARCH="amd64" ;;
+    aarch64) DUF_ARCH="arm64" ;;
+    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
+  esac
+  DUF_VERSION=$(curl -fsSL "https://api.github.com/repos/muesli/duf/releases/latest" \
+    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
+  DUF_URL="https://github.com/muesli/duf/releases/download/v${DUF_VERSION}/duf_${DUF_VERSION}_linux_${DUF_ARCH}.tar.gz"
+  mkdir -p "$HOME/.local/bin"
+  curl -fsSL "$DUF_URL" | tar xz -C "$HOME/.local/bin" duf
+  chmod +x "$HOME/.local/bin/duf"
+  echo "  - duf $("$HOME/.local/bin/duf" --version) をインストールしました"
+fi
+
 # --- dust ---
 echo "[+] dust をインストール中..."
 if command -v dust &>/dev/null || [ -x "$HOME/.local/bin/dust" ]; then
