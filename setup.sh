@@ -140,6 +140,16 @@ link_file() {
   echo "  - $(basename "$dest") -> $src"
 }
 
+# --- Oh My Tmux ---
+if [ -f "$HOME/.local/share/tmux/oh-my-tmux/.tmux.conf" ]; then
+  echo "[Oh My Tmux] 既にインストール済み"
+elif confirm "Oh My Tmux をインストールしますか?"; then
+  mkdir -p "$HOME/.local/share/tmux"
+  git clone --single-branch https://github.com/gpakosz/.tmux.git "$HOME/.local/share/tmux/oh-my-tmux"
+  mkdir -p "$HOME/.config/tmux"
+  ln -sf "$HOME/.local/share/tmux/oh-my-tmux/.tmux.conf" "$HOME/.config/tmux/tmux.conf"
+fi
+
 confirm ".zshrc のシンボリックリンクを作成しますか?" && link_file "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
 confirm ".p10k.zsh のシンボリックリンクを作成しますか?" && link_file "$SCRIPT_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
 confirm ".bashrc のシンボリックリンクを作成しますか?" && link_file "$SCRIPT_DIR/.bashrc" "$HOME/.bashrc"
