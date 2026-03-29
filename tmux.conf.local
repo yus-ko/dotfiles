@@ -133,8 +133,7 @@ tmux_conf_theme_window_bg="default"
 tmux_conf_theme_highlight_focused_pane=true
 
 # focused pane colours:
-# weztermが書き出した明るめ背景色を読み込む（なければcolour8にフォールバック）
-tmux_conf_theme_focused_pane_bg=$(cat ~/.config/tmux/focused_bg_color 2>/dev/null || echo "$tmux_conf_theme_colour_2")
+tmux_conf_theme_focused_pane_bg="$tmux_conf_theme_colour_2"
 
 # pane border style, possible values are:
 #   - thin (default)
@@ -440,6 +439,9 @@ bind m run "cut -c3- '#{TMUX_CONF}' | sh -s _toggle_mouse" \; display 'mouse #{?
 
 # move status line to top
 #set -g status-position top
+
+# OSC 11で背景色を取得しフォーカスペインの色を同期
+run-shell -b "$HOME/.local/bin/tmux-sync-bg"
 
 
 # -- tpm -----------------------------------------------------------------------

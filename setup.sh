@@ -154,6 +154,9 @@ mkdir -p "$HOME/.local/bin"
 cp "$SCRIPT_DIR/bin/imgcat" "$HOME/.local/bin/imgcat"
 chmod +x "$HOME/.local/bin/imgcat"
 echo "  - imgcat -> $HOME/.local/bin/imgcat"
+cp "$SCRIPT_DIR/bin/tmux-sync-bg" "$HOME/.local/bin/tmux-sync-bg"
+chmod +x "$HOME/.local/bin/tmux-sync-bg"
+echo "  - tmux-sync-bg -> $HOME/.local/bin/tmux-sync-bg"
 
 # --- uv ---
 echo "[+] uv をインストール中..."
