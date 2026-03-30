@@ -149,7 +149,8 @@ link_file() {
   if [ -e "$dest" ] || [ -L "$dest" ]; then
     local backup="$BACKUP_DIR/$(basename "$dest").backup.$(date +%Y%m%d%H%M%S)"
     echo "  - 既存の $(basename "$dest") をバックアップ: $backup"
-    mv "$dest" "$backup"
+    cp -rL "$dest" "$backup"
+    rm -rf "$dest"
   fi
   ln -s "$src" "$dest"
   echo "  - $(basename "$dest") -> $src"
