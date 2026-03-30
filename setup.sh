@@ -173,28 +173,12 @@ if confirm "tmux.conf.local のシンボリックリンクを作成しますか?
   link_file "$SCRIPT_DIR/tmux.conf.local" "$HOME/.config/tmux/tmux.conf.local"
 fi
 
-# --- Neovim 本体（GitHub Releases から最新版） ---
-if command -v nvim &>/dev/null && nvim --version | grep -qE 'NVIM v(0\.[1-9][0-9]|[1-9])'; then
-  echo "[Neovim] 既に要件を満たすバージョンがインストール済み: $(nvim --version | head -1)"
+# --- Neovim 本体 ---
+if command -v nvim &>/dev/null; then
+  echo "[Neovim] 既にインストール済み: $(nvim --version | head -1)"
 elif confirm "Neovim をインストールしますか?"; then
-  ARCH="$(uname -m)"
-  case "$ARCH" in
-    x86_64)  NVIM_ASSET="nvim-linux-x86_64.tar.gz" ;;
-    aarch64) NVIM_ASSET="nvim-linux-arm64.tar.gz"  ;;
-    *)        echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
-  esac
-  NVIM_URL="https://github.com/neovim/neovim/releases/latest/download/${NVIM_ASSET}"
-  NVIM_TMP="$(mktemp -d)"
-  echo "  - ${NVIM_URL} からダウンロード中..."
-  curl -fsSL "$NVIM_URL" | tar xz -C "$NVIM_TMP"
-  NVIM_DIR_NAME="${NVIM_ASSET%.tar.gz}"
-  mkdir -p "$HOME/.local"
-  rm -rf "$HOME/.local/${NVIM_DIR_NAME}"
-  mv "$NVIM_TMP/${NVIM_DIR_NAME}" "$HOME/.local/${NVIM_DIR_NAME}"
-  rm -rf "$NVIM_TMP"
-  mkdir -p "$HOME/.local/bin"
-  ln -sf "$HOME/.local/${NVIM_DIR_NAME}/bin/nvim" "$HOME/.local/bin/nvim"
-  echo "  - nvim $("$HOME/.local/bin/nvim" --version | head -1) をインストールしました"
+  brew install neovim
+  echo "  - Neovim をインストールしました"
 fi
 
 # --- Neovim (LazyVim) ---
