@@ -75,6 +75,21 @@ if confirm "必要パッケージ (zsh, git, curl, tmux, fzf) をインストー
   fi
 fi
 
+# --- Homebrew ---
+if command -v brew &>/dev/null; then
+  echo "[Homebrew] 既にインストール済み: $(brew --version | head -1)"
+elif confirm "Homebrew をインストールしますか?"; then
+  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  # PATHを通す
+  if [ -d /home/linuxbrew/.linuxbrew ]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  elif [ -d "$HOME/.linuxbrew" ]; then
+    eval "$("$HOME/.linuxbrew/bin/brew" shellenv)"
+  elif [ -d /opt/homebrew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  fi
+fi
+
 # --- Oh My Zsh ---
 if [ -d "$HOME/.oh-my-zsh" ]; then
   echo "[Oh My Zsh] 既にインストール済み"
@@ -220,250 +235,104 @@ echo "=== オプショナルCLIツール ==="
 if command -v uv &>/dev/null; then
   echo "[uv] 既にインストール済み: $(uv --version)"
 elif confirm "uv (Python パッケージマネージャ)"; then
-  curl -LsSf https://astral.sh/uv/install.sh | sh
+  brew install uv
   echo "  - uv をインストールしました"
 fi
 
 # --- eza ---
-if command -v eza &>/dev/null || [ -x "$HOME/.local/bin/eza" ]; then
+if command -v eza &>/dev/null; then
   echo "[eza] 既にインストール済み"
 elif confirm "eza (モダンな ls)"; then
-  ARCH="$(uname -m)"
-  case "$ARCH" in
-    x86_64)  EZA_ASSET="eza_x86_64-unknown-linux-gnu.tar.gz" ;;
-    aarch64) EZA_ASSET="eza_aarch64-unknown-linux-gnu.tar.gz" ;;
-    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
-  esac
-  mkdir -p "$HOME/.local/bin"
-  curl -fsSL "https://github.com/eza-community/eza/releases/latest/download/${EZA_ASSET}" \
-    | tar xz -C "$HOME/.local/bin"
-  chmod +x "$HOME/.local/bin/eza"
-  echo "  - eza $("$HOME/.local/bin/eza" --version | head -1) をインストールしました"
+  brew install eza
+  echo "  - eza をインストールしました"
 fi
 
 # --- fd ---
-if command -v fd &>/dev/null || [ -x "$HOME/.local/bin/fd" ]; then
+if command -v fd &>/dev/null; then
   echo "[fd] 既にインストール済み"
 elif confirm "fd (モダンな find)"; then
-  ARCH="$(uname -m)"
-  case "$ARCH" in
-    x86_64)  FD_ARCH="x86_64-unknown-linux-gnu" ;;
-    aarch64) FD_ARCH="aarch64-unknown-linux-gnu" ;;
-    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
-  esac
-  FD_VERSION=$(curl -fsSL "https://api.github.com/repos/sharkdp/fd/releases/latest" \
-    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
-  FD_URL="https://github.com/sharkdp/fd/releases/download/v${FD_VERSION}/fd-v${FD_VERSION}-${FD_ARCH}.tar.gz"
-  FD_TMP="$(mktemp -d)"
-  curl -fsSL "$FD_URL" | tar xz -C "$FD_TMP"
-  mkdir -p "$HOME/.local/bin"
-  cp "$FD_TMP"/fd-v*/fd "$HOME/.local/bin/fd"
-  chmod +x "$HOME/.local/bin/fd"
-  rm -rf "$FD_TMP"
-  echo "  - fd $("$HOME/.local/bin/fd" --version) をインストールしました"
+  brew install fd
+  echo "  - fd をインストールしました"
 fi
 
 # --- dust ---
-if command -v dust &>/dev/null || [ -x "$HOME/.local/bin/dust" ]; then
+if command -v dust &>/dev/null; then
   echo "[dust] 既にインストール済み"
 elif confirm "dust (モダンな du)"; then
-  ARCH="$(uname -m)"
-  case "$ARCH" in
-    x86_64)  DUST_ARCH="x86_64-unknown-linux-gnu" ;;
-    aarch64) DUST_ARCH="aarch64-unknown-linux-gnu" ;;
-    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
-  esac
-  DUST_VERSION=$(curl -fsSL "https://api.github.com/repos/bootandy/dust/releases/latest" \
-    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
-  DUST_URL="https://github.com/bootandy/dust/releases/download/v${DUST_VERSION}/dust-v${DUST_VERSION}-${DUST_ARCH}.tar.gz"
-  DUST_TMP="$(mktemp -d)"
-  curl -fsSL "$DUST_URL" | tar xz -C "$DUST_TMP"
-  mkdir -p "$HOME/.local/bin"
-  cp "$DUST_TMP"/dust-v*/dust "$HOME/.local/bin/dust"
-  chmod +x "$HOME/.local/bin/dust"
-  rm -rf "$DUST_TMP"
-  echo "  - dust $("$HOME/.local/bin/dust" --version) をインストールしました"
+  brew install dust
+  echo "  - dust をインストールしました"
 fi
 
 # --- duf ---
-if command -v duf &>/dev/null || [ -x "$HOME/.local/bin/duf" ]; then
+if command -v duf &>/dev/null; then
   echo "[duf] 既にインストール済み"
 elif confirm "duf (モダンな df)"; then
-  ARCH="$(uname -m)"
-  case "$ARCH" in
-    x86_64)  DUF_ARCH="x86_64" ;;
-    aarch64) DUF_ARCH="arm64" ;;
-    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
-  esac
-  DUF_VERSION=$(curl -fsSL "https://api.github.com/repos/muesli/duf/releases/latest" \
-    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
-  DUF_URL="https://github.com/muesli/duf/releases/download/v${DUF_VERSION}/duf_${DUF_VERSION}_linux_${DUF_ARCH}.tar.gz"
-  mkdir -p "$HOME/.local/bin"
-  curl -fsSL "$DUF_URL" | tar xz -C "$HOME/.local/bin" duf
-  chmod +x "$HOME/.local/bin/duf"
-  echo "  - duf $("$HOME/.local/bin/duf" --version) をインストールしました"
+  brew install duf
+  echo "  - duf をインストールしました"
 fi
 
 # --- procs ---
-if command -v procs &>/dev/null || [ -x "$HOME/.local/bin/procs" ]; then
+if command -v procs &>/dev/null; then
   echo "[procs] 既にインストール済み"
 elif confirm "procs (モダンな ps)"; then
-  ARCH="$(uname -m)"
-  case "$ARCH" in
-    x86_64)  PROCS_ARCH="x86_64" ;;
-    aarch64) PROCS_ARCH="aarch64" ;;
-    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
-  esac
-  PROCS_VERSION=$(curl -fsSL "https://api.github.com/repos/dalance/procs/releases/latest" \
-    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
-  PROCS_URL="https://github.com/dalance/procs/releases/download/v${PROCS_VERSION}/procs-v${PROCS_VERSION}-${PROCS_ARCH}-linux.zip"
-  PROCS_TMP="$(mktemp -d)"
-  curl -fsSL "$PROCS_URL" -o "$PROCS_TMP/procs.zip"
-  unzip -q "$PROCS_TMP/procs.zip" -d "$PROCS_TMP"
-  mkdir -p "$HOME/.local/bin"
-  cp "$PROCS_TMP/procs" "$HOME/.local/bin/procs"
-  chmod +x "$HOME/.local/bin/procs"
-  rm -rf "$PROCS_TMP"
-  echo "  - procs $("$HOME/.local/bin/procs" --version) をインストールしました"
+  brew install procs
+  echo "  - procs をインストールしました"
 fi
 
 # --- bottom ---
-if command -v btm &>/dev/null || [ -x "$HOME/.local/bin/btm" ]; then
+if command -v btm &>/dev/null; then
   echo "[bottom] 既にインストール済み"
 elif confirm "bottom (モダンな top)"; then
-  ARCH="$(uname -m)"
-  case "$ARCH" in
-    x86_64)  BTM_ARCH="x86_64-unknown-linux-gnu" ;;
-    aarch64) BTM_ARCH="aarch64-unknown-linux-gnu" ;;
-    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
-  esac
-  BTM_VERSION=$(curl -fsSL "https://api.github.com/repos/ClementTsang/bottom/releases/latest" \
-    | grep '"tag_name"' | sed 's/.*"\([^"]*\)".*/\1/')
-  BTM_URL="https://github.com/ClementTsang/bottom/releases/download/${BTM_VERSION}/bottom_${BTM_ARCH}.tar.gz"
-  mkdir -p "$HOME/.local/bin"
-  curl -fsSL "$BTM_URL" | tar xz -C "$HOME/.local/bin" btm
-  chmod +x "$HOME/.local/bin/btm"
-  echo "  - bottom $("$HOME/.local/bin/btm" --version) をインストールしました"
+  brew install bottom
+  echo "  - bottom をインストールしました"
 fi
 
 # --- tealdeer ---
-if command -v tldr &>/dev/null || [ -x "$HOME/.local/bin/tldr" ]; then
+if command -v tldr &>/dev/null; then
   echo "[tealdeer] 既にインストール済み"
 elif confirm "tealdeer (tldr コマンドチートシート)"; then
-  ARCH="$(uname -m)"
-  case "$ARCH" in
-    x86_64)  TLDR_ARCH="x86_64" ;;
-    aarch64) TLDR_ARCH="aarch64" ;;
-    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
-  esac
-  mkdir -p "$HOME/.local/bin"
-  curl -fsSL "https://github.com/tealdeer-rs/tealdeer/releases/latest/download/tealdeer-linux-${TLDR_ARCH}-musl" \
-    -o "$HOME/.local/bin/tldr"
-  chmod +x "$HOME/.local/bin/tldr"
-  echo "  - tealdeer $("$HOME/.local/bin/tldr" --version) をインストールしました"
+  brew install tealdeer
+  echo "  - tealdeer をインストールしました"
 fi
 
 # --- yazi ---
-if command -v yazi &>/dev/null || [ -x "$HOME/.local/bin/yazi" ]; then
+if command -v yazi &>/dev/null; then
   echo "[yazi] 既にインストール済み"
 elif confirm "yazi (ターミナルファイルマネージャ)"; then
-  ARCH="$(uname -m)"
-  case "$ARCH" in
-    x86_64)  YAZI_ARCH="x86_64-unknown-linux-gnu" ;;
-    aarch64) YAZI_ARCH="aarch64-unknown-linux-gnu" ;;
-    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
-  esac
-  YAZI_VERSION=$(curl -fsSL "https://api.github.com/repos/sxyazi/yazi/releases/latest" \
-    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
-  YAZI_URL="https://github.com/sxyazi/yazi/releases/download/v${YAZI_VERSION}/yazi-${YAZI_ARCH}.zip"
-  YAZI_TMP="$(mktemp -d)"
-  curl -fsSL "$YAZI_URL" -o "$YAZI_TMP/yazi.zip"
-  unzip -q "$YAZI_TMP/yazi.zip" -d "$YAZI_TMP"
-  mkdir -p "$HOME/.local/bin"
-  cp "$YAZI_TMP"/yazi-*/yazi "$HOME/.local/bin/yazi"
-  cp "$YAZI_TMP"/yazi-*/ya "$HOME/.local/bin/ya"
-  chmod +x "$HOME/.local/bin/yazi" "$HOME/.local/bin/ya"
-  rm -rf "$YAZI_TMP"
-  echo "  - yazi $("$HOME/.local/bin/yazi" --version) をインストールしました"
+  brew install yazi
+  echo "  - yazi をインストールしました"
 fi
 
 # --- zoxide ---
-if command -v zoxide &>/dev/null || [ -x "$HOME/.local/bin/zoxide" ]; then
+if command -v zoxide &>/dev/null; then
   echo "[zoxide] 既にインストール済み"
 elif confirm "zoxide (スマート cd)"; then
-  ARCH="$(uname -m)"
-  case "$ARCH" in
-    x86_64)  ZO_ARCH="x86_64-unknown-linux-musl" ;;
-    aarch64) ZO_ARCH="aarch64-unknown-linux-musl" ;;
-    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
-  esac
-  ZO_VERSION=$(curl -fsSL "https://api.github.com/repos/ajeetdsouza/zoxide/releases/latest" \
-    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
-  ZO_URL="https://github.com/ajeetdsouza/zoxide/releases/download/v${ZO_VERSION}/zoxide-${ZO_VERSION}-${ZO_ARCH}.tar.gz"
-  mkdir -p "$HOME/.local/bin"
-  curl -fsSL "$ZO_URL" | tar xz -C "$HOME/.local/bin" zoxide
-  chmod +x "$HOME/.local/bin/zoxide"
-  echo "  - zoxide $("$HOME/.local/bin/zoxide" --version) をインストールしました"
+  brew install zoxide
+  echo "  - zoxide をインストールしました"
 fi
 
 # --- atuin ---
-if command -v atuin &>/dev/null || [ -x "$HOME/.local/bin/atuin" ]; then
+if command -v atuin &>/dev/null; then
   echo "[atuin] 既にインストール済み"
 elif confirm "atuin (シェル履歴管理)"; then
-  ARCH="$(uname -m)"
-  case "$ARCH" in
-    x86_64)  ATUIN_ARCH="x86_64-unknown-linux-gnu" ;;
-    aarch64) ATUIN_ARCH="aarch64-unknown-linux-gnu" ;;
-    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
-  esac
-  ATUIN_VERSION=$(curl -fsSL "https://api.github.com/repos/atuinsh/atuin/releases/latest" \
-    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
-  ATUIN_URL="https://github.com/atuinsh/atuin/releases/download/v${ATUIN_VERSION}/atuin-${ATUIN_ARCH}.tar.gz"
-  ATUIN_TMP="$(mktemp -d)"
-  curl -fsSL "$ATUIN_URL" | tar xz -C "$ATUIN_TMP"
-  mkdir -p "$HOME/.local/bin"
-  cp "$ATUIN_TMP"/atuin-*/atuin "$HOME/.local/bin/atuin"
-  chmod +x "$HOME/.local/bin/atuin"
-  rm -rf "$ATUIN_TMP"
-  echo "  - atuin $("$HOME/.local/bin/atuin" --version) をインストールしました"
+  brew install atuin
+  echo "  - atuin をインストールしました"
 fi
 
 # --- lazygit ---
-if command -v lazygit &>/dev/null || [ -x "$HOME/.local/bin/lazygit" ]; then
+if command -v lazygit &>/dev/null; then
   echo "[lazygit] 既にインストール済み"
 elif confirm "lazygit (Git TUI)"; then
-  ARCH="$(uname -m)"
-  case "$ARCH" in
-    x86_64)  LG_ARCH="x86_64" ;;
-    aarch64) LG_ARCH="arm64"  ;;
-    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
-  esac
-  LG_VERSION=$(curl -fsSL "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" \
-    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
-  LG_URL="https://github.com/jesseduffield/lazygit/releases/download/v${LG_VERSION}/lazygit_${LG_VERSION}_Linux_${LG_ARCH}.tar.gz"
-  mkdir -p "$HOME/.local/bin"
-  curl -fsSL "$LG_URL" | tar xz -C "$HOME/.local/bin" lazygit
-  chmod +x "$HOME/.local/bin/lazygit"
-  echo "  - lazygit $("$HOME/.local/bin/lazygit" --version | head -1) をインストールしました"
+  brew install lazygit
+  echo "  - lazygit をインストールしました"
 fi
 
 # --- lazydocker ---
-if command -v lazydocker &>/dev/null || [ -x "$HOME/.local/bin/lazydocker" ]; then
+if command -v lazydocker &>/dev/null; then
   echo "[lazydocker] 既にインストール済み"
 elif confirm "lazydocker (Docker TUI)"; then
-  ARCH="$(uname -m)"
-  case "$ARCH" in
-    x86_64)  LD_ARCH="x86_64" ;;
-    aarch64) LD_ARCH="arm64"  ;;
-    *) echo "  - ERROR: 未対応アーキテクチャ: $ARCH"; exit 1 ;;
-  esac
-  LD_VERSION=$(curl -fsSL "https://api.github.com/repos/jesseduffield/lazydocker/releases/latest" \
-    | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
-  LD_URL="https://github.com/jesseduffield/lazydocker/releases/download/v${LD_VERSION}/lazydocker_${LD_VERSION}_Linux_${LD_ARCH}.tar.gz"
-  mkdir -p "$HOME/.local/bin"
-  curl -fsSL "$LD_URL" | tar xz -C "$HOME/.local/bin" lazydocker
-  chmod +x "$HOME/.local/bin/lazydocker"
-  echo "  - lazydocker $("$HOME/.local/bin/lazydocker" --version | head -1) をインストールしました"
+  brew install lazydocker
+  echo "  - lazydocker をインストールしました"
 fi
 
 # --- デフォルトシェルを zsh に変更 ---
