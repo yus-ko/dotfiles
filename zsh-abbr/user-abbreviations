@@ -1,5 +1,6 @@
 abbr "add_serena"="claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context claude-code --project \$(pwd)"
 abbr "bat"="batcat"
+abbr "cat"="batcat"
 abbr "build"="docker compose up -d --build"
 abbr "c"="z \$(fd --type d | fzf)"
 abbr "cd"="z"
