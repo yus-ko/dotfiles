@@ -162,6 +162,8 @@ if [ -f "$HOME/.local/share/tmux/oh-my-tmux/.tmux.conf" ]; then
 elif confirm "Oh My Tmux をインストールしますか?"; then
   mkdir -p "$HOME/.local/share/tmux"
   git clone --single-branch https://github.com/gpakosz/.tmux.git "$HOME/.local/share/tmux/oh-my-tmux"
+fi
+if [ -f "$HOME/.local/share/tmux/oh-my-tmux/.tmux.conf" ]; then
   mkdir -p "$HOME/.config/tmux"
   ln -sf "$HOME/.local/share/tmux/oh-my-tmux/.tmux.conf" "$HOME/.config/tmux/tmux.conf"
 fi
