@@ -79,7 +79,7 @@ fi
 if command -v brew &>/dev/null; then
   echo "[Homebrew] 既にインストール済み: $(brew --version | head -1)"
 elif confirm "Homebrew をインストールしますか?"; then
-  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   # PATHを通す
   if [ -d /home/linuxbrew/.linuxbrew ]; then
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
