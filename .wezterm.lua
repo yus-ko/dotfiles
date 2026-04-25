@@ -21,6 +21,8 @@ config.audible_bell = "Disabled"
 config.use_ime = true
 -- config.front_end = "OpenGL"
 config.win32_system_backdrop = "Acrylic"
+-- tmux へ Ctrl+矢印などの修飾キーを CSI-u 形式で渡す
+config.enable_csi_u_key_encoding = true
 -- 起動ごとにランダムなダークテーマを選択
 local schemes = wezterm.color.get_builtin_schemes()
 local dark_schemes = {}
@@ -136,6 +138,14 @@ config.keys = {
 	{ key = "Space", mods = "CTRL", action = act.SendString("\x02") },
 	{ key = "PageUp", mods = "SHIFT", action = act.SendKey({ key = "PageUp", mods = "SHIFT" }) },
 	{ key = "PageDown", mods = "SHIFT", action = act.SendKey({ key = "PageDown", mods = "SHIFT" }) },
+}
+config.keys = {
+	{ key = "PageUp", mods = "SHIFT", action = act.SendKey({ key = "PageUp", mods = "SHIFT" }) },
+	{ key = "PageDown", mods = "SHIFT", action = act.SendKey({ key = "PageDown", mods = "SHIFT" }) },
+	{ key = "LeftArrow", mods = "CTRL", action = act.SendKey({ key = "LeftArrow", mods = "CTRL" }) },
+	{ key = "DownArrow", mods = "CTRL", action = act.SendKey({ key = "DownArrow", mods = "CTRL" }) },
+	{ key = "UpArrow", mods = "CTRL", action = act.SendKey({ key = "UpArrow", mods = "CTRL" }) },
+	{ key = "RightArrow", mods = "CTRL", action = act.SendKey({ key = "RightArrow", mods = "CTRL" }) },
 }
 
 return config
