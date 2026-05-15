@@ -131,6 +131,9 @@ end)
 -- Shift+PageUp/PageDownをtmuxに渡す
 local act = wezterm.action
 config.keys = {
+	-- Windows OpenSSH/ConPTY drops Ctrl+Space on some remote sessions.
+	-- Send Ctrl+b instead; tmux/psmux accepts it as prefix2.
+	{ key = "Space", mods = "CTRL", action = act.SendString("\x02") },
 	{ key = "PageUp", mods = "SHIFT", action = act.SendKey({ key = "PageUp", mods = "SHIFT" }) },
 	{ key = "PageDown", mods = "SHIFT", action = act.SendKey({ key = "PageDown", mods = "SHIFT" }) },
 }
