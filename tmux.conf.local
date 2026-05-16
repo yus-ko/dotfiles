@@ -391,6 +391,7 @@ set -g set-clipboard on
 
 # prefix を Ctrl+Space に変更
 set -g prefix C-Space #!important
+set -g prefix2 C-b #!important
 unbind-key -n C-o
 
 # prefix+r で設定リロード
