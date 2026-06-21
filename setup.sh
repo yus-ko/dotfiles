@@ -17,7 +17,8 @@ Options:
   -h, --help  このヘルプを表示
 
 セットアップ内容:
-  1. 必要パッケージ (zsh, git, curl, tmux, fzf, unzip, batcat)
+  1. 必要パッケージ (zsh, git, curl, tmux, fzf, unzip, batcat, locales)
+     Ubuntu: ja_JP.UTF-8 ロケール / Asia/Tokyo タイムゾーン
   2. Oh My Zsh / Powerlevel10k / zsh プラグイン
   3. シンボリックリンク (.zshrc, .p10k.zsh, .bashrc, tmux.conf.local, zsh-abbr)
   4. Neovim (LazyVim)
@@ -48,23 +49,31 @@ confirm() {
 echo "=== dotfiles セットアップ ==="
 
 # --- 必要パッケージのインストール ---
-if confirm "必要パッケージ (zsh, git, curl, tmux, fzf, unzip, batcat) をインストールしますか?"; then
+if confirm "必要パッケージと日本語ロケールをセットアップしますか?"; then
   PACKAGES=(zsh git curl tmux fzf unzip bat)
   if command -v apt-get &>/dev/null; then
     # Debian / Ubuntu
+    PACKAGES+=(locales tzdata)
+    ROOT=()
+    [ "$(id -u)" -ne 0 ] && ROOT=(sudo -E)
+    APT=("${ROOT[@]}" apt-get)
     MISSING=()
     for pkg in "${PACKAGES[@]}"; do
       dpkg -s "$pkg" &>/dev/null || MISSING+=("$pkg")
     done
     if [ ${#MISSING[@]} -gt 0 ]; then
       echo "  - apt で不足パッケージをインストール: ${MISSING[*]}"
-      APT="apt-get"
-      [ "$(id -u)" -ne 0 ] && APT="sudo -E apt-get"
-      $APT update -qq
-      $APT install -y -qq "${MISSING[@]}"
+      "${APT[@]}" update -qq
+      DEBIAN_FRONTEND=noninteractive "${APT[@]}" install -y -qq "${MISSING[@]}"
     else
       echo "  - 必要パッケージはすべてインストール済み"
     fi
+
+    "${ROOT[@]}" locale-gen ja_JP.UTF-8
+    "${ROOT[@]}" update-locale LANG=ja_JP.UTF-8
+    "${ROOT[@]}" ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+    export LANG=ja_JP.UTF-8
+    echo "  - ロケールを ja_JP.UTF-8、タイムゾーンを Asia/Tokyo に設定しました"
   elif command -v brew &>/dev/null; then
     # macOS (Homebrew)
     for pkg in "${PACKAGES[@]}"; do

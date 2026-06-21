@@ -57,7 +57,9 @@ cd ~/dotfiles
 
 セットアップスクリプトは以下を行います（各ステップで確認あり）：
 
-1. 必要パッケージのインストール（zsh, git, curl, tmux, fzf, unzip, batcat）
+1. 必要パッケージのインストール（zsh, git, curl, tmux, fzf, unzip, batcat。Ubuntuではlocales, tzdataも含む）
+   - Ubuntuでは `ja_JP.UTF-8` を生成して既定ロケールに設定
+   - Ubuntuでは `/etc/localtime` を `Asia/Tokyo` へリンク
 2. Oh My Zsh のインストール
 3. Powerlevel10k テーマのインストール
 4. zsh プラグインのインストール
