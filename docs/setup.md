@@ -6,7 +6,8 @@
 
 - `setup.sh` の必要パッケージとして bat をインストールする。
 - Debian / Ubuntu では `bat` パッケージが提供する `batcat` コマンドを使用する。
-- Homebrew では `bat` パッケージをインストールする。
+- Homebrew では `bat` パッケージをインストールし、`batcat` のシンボリックリンクを作成する。
+- APTで `bat` が提供されないUbuntuでは、Homebrewから補完する。
 - 対話確認とヘルプには、利用者が実行するコマンド名として `batcat` を表示する。
 
 ## M3 Ubuntuのロケールとタイムゾーン設定

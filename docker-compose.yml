@@ -1,0 +1,52 @@
+x-ubuntu-test: &ubuntu-test
+  init: true
+  restart: "no"
+
+services:
+  ubuntu-16-04:
+    <<: *ubuntu-test
+    build:
+      context: .
+      dockerfile: tests/docker/Dockerfile
+      args:
+        UBUNTU_VERSION: "16.04"
+
+  ubuntu-18-04:
+    <<: *ubuntu-test
+    build:
+      context: .
+      dockerfile: tests/docker/Dockerfile
+      args:
+        UBUNTU_VERSION: "18.04"
+
+  ubuntu-20-04:
+    <<: *ubuntu-test
+    build:
+      context: .
+      dockerfile: tests/docker/Dockerfile
+      args:
+        UBUNTU_VERSION: "20.04"
+
+  ubuntu-22-04:
+    <<: *ubuntu-test
+    build:
+      context: .
+      dockerfile: tests/docker/Dockerfile
+      args:
+        UBUNTU_VERSION: "22.04"
+
+  ubuntu-24-04:
+    <<: *ubuntu-test
+    build:
+      context: .
+      dockerfile: tests/docker/Dockerfile
+      args:
+        UBUNTU_VERSION: "24.04"
+
+  ubuntu-26-04:
+    <<: *ubuntu-test
+    build:
+      context: .
+      dockerfile: tests/docker/Dockerfile
+      args:
+        UBUNTU_VERSION: "26.04"
