@@ -55,6 +55,17 @@ cd ~/dotfiles
 ./setup.sh -h     # ヘルプ表示
 ```
 
+## Ubuntuバージョン別テスト
+
+Docker ComposeでUbuntu 16.04、18.04、20.04、22.04、24.04、26.04に対するセットアップを一括テストします。
+
+```bash
+docker compose up --build --abort-on-container-failure
+docker compose down
+```
+
+特定バージョンのみ実行する場合は、たとえば `docker compose run --rm ubuntu-24-04` を使用します。詳細は [Ubuntuテストパイプライン仕様](docs/ubuntu-test-pipeline.md) を参照してください。
+
 セットアップスクリプトは以下を行います（各ステップで確認あり）：
 
 1. 必要パッケージのインストール（zsh, git, curl, tmux, fzf, unzip, batcat。Ubuntuではlocales, tzdataも含む）
