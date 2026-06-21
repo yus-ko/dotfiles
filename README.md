@@ -29,6 +29,7 @@
 
 | ツール | 説明 |
 |--------|------|
+| [batcat](https://github.com/sharkdp/bat) | シンタックスハイライトとGit連携に対応した `cat` 代替 |
 | [eza](https://github.com/eza-community/eza) | モダンな `ls` 代替（アイコン・Git対応） |
 | [fd](https://github.com/sharkdp/fd) | モダンな `find` 代替（高速・.gitignore認識） |
 | [dust](https://github.com/bootandy/dust) | モダンな `du` 代替（ツリー＋バーグラフ） |
@@ -56,7 +57,7 @@ cd ~/dotfiles
 
 セットアップスクリプトは以下を行います（各ステップで確認あり）：
 
-1. 必要パッケージのインストール（zsh, git, curl, tmux, fzf, unzip）
+1. 必要パッケージのインストール（zsh, git, curl, tmux, fzf, unzip, batcat）
 2. Oh My Zsh のインストール
 3. Powerlevel10k テーマのインストール
 4. zsh プラグインのインストール

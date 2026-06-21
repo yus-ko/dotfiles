@@ -17,7 +17,7 @@ Options:
   -h, --help  このヘルプを表示
 
 セットアップ内容:
-  1. 必要パッケージ (zsh, git, curl, tmux, fzf, unzip)
+  1. 必要パッケージ (zsh, git, curl, tmux, fzf, unzip, batcat)
   2. Oh My Zsh / Powerlevel10k / zsh プラグイン
   3. シンボリックリンク (.zshrc, .p10k.zsh, .bashrc, tmux.conf.local, zsh-abbr)
   4. Neovim (LazyVim)
@@ -48,8 +48,8 @@ confirm() {
 echo "=== dotfiles セットアップ ==="
 
 # --- 必要パッケージのインストール ---
-if confirm "必要パッケージ (zsh, git, curl, tmux, fzf) をインストールしますか?"; then
-  PACKAGES=(zsh git curl tmux fzf unzip)
+if confirm "必要パッケージ (zsh, git, curl, tmux, fzf, unzip, batcat) をインストールしますか?"; then
+  PACKAGES=(zsh git curl tmux fzf unzip bat)
   if command -v apt-get &>/dev/null; then
     # Debian / Ubuntu
     MISSING=()
