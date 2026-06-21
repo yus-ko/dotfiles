@@ -145,17 +145,3 @@ if ! shopt -oq posix; then
   fi
 fi
 
-ros_source () {
-	if [ -e "$1" ]; then
-		source $1
-	fi
-}
-. "$HOME/.local/bin/env"
-ros_source /opt/ros/humble/setup.bash
-ros_source /opt/ros/melodic/setup.bash
-ros_source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
-ros_source /usr/share/bash-completion/completions/git
-
-if [ -v $TMUX ] && [ -z "$TERM_PROGRAM"  ]; then
-	cd && tmux
-fi
